@@ -17,13 +17,9 @@ export const onPreRenderHTML = (
     replacePreBodyComponents,
     getPostBodyComponents,
     replacePostBodyComponents,
-    pathname
+    pathname,
   },
-  {
-    analytics,
-    components = [],
-    pathIdentifier = "/amp/",
-  }
+  { analytics, components = [], pathIdentifier = "/amp/" }
 ) => {
   const headComponents = flattenDeep(getHeadComponents());
   const preBodyComponents = getPreBodyComponents();
@@ -79,46 +75,24 @@ export const onPreRenderHTML = (
           x.type !== "style" &&
           (x.type !== "script" || x.props.type === "application/ld+json") &&
           x.key !== "TypographyStyle"
-      )
+      ),
     ]);
     replacePreBodyComponents([
-      ...preBodyComponents.filter(x => x.key !== "plugin-google-tagmanager")
+      ...preBodyComponents.filter(x => x.key !== "plugin-google-tagmanager"),
     ]);
     replacePostBodyComponents(
       postBodyComponents.filter(x => x.type !== "script")
     );
-  } 
+  }
 };
 
 export const onRenderBody = (
-  { setHeadComponents, setHtmlAttributes, setPreBodyComponents, pathname },
-  {
-    analytics,
-    canonicalBaseUrl,
-    pathIdentifier = "/amp/",
-    relCanonicalPattern = "{{canonicalBaseUrl}}{{pathname}}",
-    useAmpClientIdApi = false
-  }
+  { setHtmlAttributes, setPreBodyComponents, pathname },
+  { analytics, pathIdentifier = "/amp/" }
 ) => {
   const isAmp = pathname && pathname.indexOf(pathIdentifier) > -1;
   if (isAmp) {
     setHtmlAttributes({ amp: "" });
-    setHeadComponents([
-      <link
-        rel="canonical"
-        href={interpolate(relCanonicalPattern, {
-          canonicalBaseUrl,
-          pathname
-        })
-          .replace(pathIdentifier, "")
-          .replace(/([^:])(\/\/+)/g, "$1/")}
-      />,
-      useAmpClientIdApi ? (
-        <meta name="amp-google-client-id-api" content="googleanalytics" />
-      ) : (
-        <Fragment />
-      )
-    ]);
     setPreBodyComponents([
       analytics != undefined ? (
         <amp-analytics
@@ -135,15 +109,15 @@ export const onRenderBody = (
               type="application/json"
               dangerouslySetInnerHTML={{
                 __html: interpolate(JSON.stringify(analytics.config), {
-                  pathname
-                })
+                  pathname,
+                }),
               }}
             />
           )}
         </amp-analytics>
       ) : (
         <Fragment />
-      )
+      ),
     ]);
   }
 };
@@ -156,18 +130,18 @@ export const replaceRenderer = (
     image: {
       width: 640,
       height: 475,
-      layout: "responsive"
+      layout: "responsive",
     },
     twitter: {
       width: "390",
       height: "330",
-      layout: "responsive"
+      layout: "responsive",
     },
     iframe: {
       width: 640,
       height: 475,
-      layout: "responsive"
-    }
+      layout: "responsive",
+    },
   };
   const headComponents = [];
   const isAmp = pathname && pathname.indexOf(pathIdentifier) > -1;
@@ -280,9 +254,7 @@ export const replaceRenderer = (
           <script
             async
             custom-element={component.name}
-            src={`https://cdn.ampproject.org/v0/${component.name}-${
-              component.version
-            }.js`}
+            src={`https://cdn.ampproject.org/v0/${component.name}-${component.version}.js`}
           />
         </Fragment>
       ))
