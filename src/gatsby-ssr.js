@@ -122,6 +122,8 @@ export const onRenderBody = (
   }
 };
 
+const bannedImageAttrs = ["decoding"];
+
 export const replaceRenderer = (
   { bodyComponent, replaceBodyHTMLString, setHeadComponents, pathname },
   { pathIdentifier = "/amp/" }
@@ -161,11 +163,13 @@ export const replaceRenderer = (
         ampImage = document.createElement("amp-img");
       }
       const attributes = Object.keys(image.attributes);
-      const includedAttributes = attributes.map(key => {
-        const attribute = image.attributes[key];
-        ampImage.setAttribute(attribute.name, attribute.value);
-        return attribute.name;
-      });
+      const includedAttributes = attributes
+        .filter(attr => bannedImageAttrs.includes(attr))
+        .map(key => {
+          const attribute = image.attributes[key];
+          ampImage.setAttribute(attribute.name, attribute.value);
+          return attribute.name;
+        });
       Object.keys(defaults.image).forEach(key => {
         if (includedAttributes && includedAttributes.indexOf(key) === -1) {
           ampImage.setAttribute(key, defaults.image[key]);
